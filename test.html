@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Final Test</title>
+    <style>
+        .card {
+            width: 250px;
+            height: 250px;
+            border-radius: 16px;
+            padding: 12px 6px;
+            box-sizing: border-box;
+            border: 1px solid gray;
+        }
+
+
+        .container {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+    </style>
+</head>
+<body>
+    <h2 style="text-align: center;">DATA POKEMON</h2>
+    <div class="container"></div>
+    <script>
+        const container = document.querySelector('.container');
+
+
+        async function fetchWithRetry(url, retriesLeft = 5, delay = 1000) {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    if (retriesLeft > 0) {
+                        return new Promise(resolve =>
+                            setTimeout(() => fetchWithRetry(url, retriesLeft - 1, delay).then(resolve), delay)
+                        );
+                    }
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response;
+            } catch (error) {
+                if (retriesLeft > 0) {
+                    return new Promise(resolve =>
+                        setTimeout(() => fetchWithRetry(url, retriesLeft - 1, delay).then(resolve), delay)
+                    );
+                }
+                throw new Error(error);
+            }
+        }
+
+
+       
+        async function fetchPokemonData() {
+            try {
+                const response = await fetchWithRetry('https://pokeapi.co/api/v2/pokemon');
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+
+
+        function createCard(pokemon) {
+            const card = document.createElement('div');
+            card.classList.add('card');
+
+
+            const name = document.createElement('h4');
+            name.textContent = pokemon.name;
+            name.style.textAlign = 'center';
+           
+            const image = document.createElement('img');
+            image.src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.url.split('/')[6]}.png`;
+            const url = document.createElement('p');
+            url.textContent = pokemon.url.trimEnd('/');
+            url.style.fontSize = '20%';
+
+
+            card.appendChild(name);
+            card.appendChild(image);
+            card.appendChild(url);
+
+
+            return card;
+        }
+
+
+        async function renderPokemonData() {
+            const pokemonData = await fetchPokemonData();
+            pokemonData.results.forEach(pokemon => {
+                const card = createCard(pokemon);
+                container.appendChild(card);
+            });
+        }
+
+
+        renderPokemonData();
+    </script>
+</body>
+</html>

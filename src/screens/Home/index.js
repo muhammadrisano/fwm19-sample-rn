@@ -1,10 +1,12 @@
 import {View, Text, StyleSheet, Image, ScrollView} from 'react-native';
 import React from 'react';
 import Card from '../../components/module/Card';
+import IcSearch from '../../assets/icons/IcMessage.svg';
 
 const Home = () => {
   return (
     <ScrollView style={styles.container}>
+      <IcSearch />
       <View style={styles.box}>
         <Text style={styles.title}>box1</Text>
       </View>
@@ -41,7 +43,7 @@ const Home = () => {
       <View style={styles.box}>
         <Text style={styles.title}>box2</Text>
       </View>
-      <Card/>
+      <Card />
     </ScrollView>
   );
 };
