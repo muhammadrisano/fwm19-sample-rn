@@ -1,9 +1,67 @@
-import {View, Text, StyleSheet, Image, ScrollView} from 'react-native';
-import React from 'react';
+import {View, Text, StyleSheet, Image, ScrollView, Alert} from 'react-native';
+import React, {useState} from 'react';
 import Card from '../../components/module/Card';
 import IcSearch from '../../assets/icons/IcMessage.svg';
+import Button from '../../components/base/Button';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {launchCamera} from 'react-native-image-picker';
+import axios from 'axios';
 
 const Home = () => {
+  const [photo, setPhoto] = useState(null);
+  const showToken = async () => {
+    const token = await AsyncStorage.getItem('token');
+    Alert.alert(token);
+  };
+  const handleChageImage = async () => {
+    try {
+      const res = await launchCamera(null);
+      if (res.didCancel) {
+        return;
+      }
+      const data = res.assets[0];
+      // console.log(data);
+      setPhoto(data);
+
+      const formData = new FormData();
+
+      const dataImage = {
+        uri: data.uri,
+        name: data.fileName,
+        filename: data.fileName,
+        type: data.type,
+      };
+      console.log(dataImage);
+      formData.append('file', {
+        uri: data.uri,
+        name: data.fileName,
+        filename: data.fileName,
+        type: data.type,
+      });
+
+      const result = await axios.post(
+        'https://fwm17-be-peword.vercel.app/v1/upload',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        },
+      );
+      console.log(result.data);
+    } catch (error) {
+      console.log(error?.response.data);
+    }
+
+    // try {
+    //   const result = await launchCamera(null);
+    //   if (result.didCancel) {
+    //     console.log('User cenceled image picker');
+    //     return;
+    //   }
+    //   console.log(result);
+    // } catch (error) {}
+  };
   return (
     <ScrollView style={styles.container}>
       <IcSearch />
@@ -43,7 +101,12 @@ const Home = () => {
       <View style={styles.box}>
         <Text style={styles.title}>box2</Text>
       </View>
-      <Card />
+      {/* <Card /> */}
+      <Button title="check token" onPress={showToken} />
+      <Button title="Pilih Image" onPress={handleChageImage} />
+      {photo?.uri && (
+        <Image source={{uri: photo.uri}} width={100} height={100} />
+      )}
     </ScrollView>
   );
 };

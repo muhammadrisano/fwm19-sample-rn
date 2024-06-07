@@ -1,6 +1,15 @@
-import {View, Text, StyleSheet, SafeAreaView, TextInput} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  SafeAreaView,
+  TextInput,
+  Alert,
+} from 'react-native';
 import React, {useState} from 'react';
 import Button from '../../components/base/Button';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Login = ({navigation}) => {
   const [form, setForm] = useState({
@@ -8,9 +17,22 @@ const Login = ({navigation}) => {
     password: '',
   });
 
-  const handleLogin = ()=>{
-    console.log(form);
-  }
+  const handleLogin = async () => {
+    try {
+      const res = await axios.post(
+        'https://fwm17-be-peword.vercel.app/v1/auth/login',
+        form,
+      );
+      console.log(res.data);
+      const {data} = res.data;
+      await AsyncStorage.setItem('token', data.token);
+      navigation.navigate('MainTab');
+    } catch (error) {
+      const messageErr = error.response?.data?.message;
+      console.log(messageErr);
+      Alert.alert(messageErr || 'terjadi kesalahan');
+    }
+  };
   return (
     <SafeAreaView>
       <View style={styles.container}>
@@ -28,7 +50,7 @@ const Login = ({navigation}) => {
           secureTextEntry={true}
           onChangeText={value => setForm({...form, password: value})}
         />
-        <Button title="Login" onPress={()=>navigation.navigate('home')} />
+        <Button title="Login" onPress={handleLogin} />
       </View>
     </SafeAreaView>
   );
