@@ -24,15 +24,12 @@ const Setting = () => {
     try {
       setLoading(true);
       const token = await AsyncStorage.getItem('token');
-      const res = await axios.get(
-        'https://fwm17-be-peword.vercel.app/v1/workers',
-        {
-          params,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+      const res = await axios.get(`${process.env.API_BACKEND}/v1/workers`, {
+        params,
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-      );
+      });
       setLoading(false);
       const {data} = res.data;
       setWorker(current => [...current, ...data]);

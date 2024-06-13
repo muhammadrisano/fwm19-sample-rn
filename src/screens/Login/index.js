@@ -19,10 +19,8 @@ const Login = ({navigation}) => {
 
   const handleLogin = async () => {
     try {
-      const res = await axios.post(
-        'https://fwm17-be-peword.vercel.app/v1/auth/login',
-        form,
-      );
+      // console.log(process.env.API_BACKEND);
+      const res = await axios.post("http://192.168.1.9:4000/v1/auth/login", form);
       console.log(res.data);
       const {data} = res.data;
       await AsyncStorage.setItem('token', data.token);

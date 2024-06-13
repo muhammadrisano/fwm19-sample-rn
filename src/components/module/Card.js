@@ -5,7 +5,7 @@ import {useNavigation} from '@react-navigation/native';
 const Card = ({data}) => {
   const navigation = useNavigation();
   const handleNavigate = () => {
-    navigation.navigate('login');
+    navigation.navigate('profile');
   };
   return (
     // <TouchableOpacity onPress={handleNavigate}>

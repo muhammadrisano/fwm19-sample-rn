@@ -40,7 +40,7 @@ const Home = () => {
       });
 
       const result = await axios.post(
-        'https://fwm17-be-peword.vercel.app/v1/upload',
+        `${process.env.API_BACKEND}/v1/upload`,
         formData,
         {
           headers: {
